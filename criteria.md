@@ -18,6 +18,15 @@ examples of it"*. A reason that could be attached to any project does not.
 > Missing your own targets next unit costs you nothing. Setting a target so
 > easy you can't miss it does.
 
+> **Status of this file (14 October 2026): the five criteria below are
+> AI-proposed and awaiting the student's approval.** They were drafted by an AI
+> assistant (Claude) from the taxonomy and the Milestone 1–2 label shares, before
+> any dataset was assembled or any model trained. The reasoning, including why
+> each number might be too easy or too hard, is in
+> [docs/criteria_proposals.md](docs/criteria_proposals.md). Until the student
+> edits or initials this file, these numbers are provisional and are not the
+> student's independent choices.
+
 ---
 
 ## Pick numbers you can defend
@@ -51,63 +60,101 @@ whether you hit them:
 
 ---
 
-## 1.
+## 1. Overall accuracy on the held-out split
 
-<!-- Your criterion. It must name a number. -->
+**Target:** overall accuracy **≥ 0.70** on the 15% test split, **on every seed** (42, 7 and 2024).
 
+**Measured by:** `results.json["accuracy"]` from notebook section 5 (unit 5), and the
+same field in `results_three_seeds_before.json` for each seed (unit 6). The
+test split is the stratified 15% the notebook writes to `test_split.csv`.
 
-
-**Why this target:**
-
-
-
----
-
-## 2.
-
-<!-- Your criterion. -->
-
-
-
-**Why this target:**
-
-
+**Why this target:** `question` is about half the data, so a model that always
+guesses it scores about 0.50; 0.70 is twenty points above that and is the
+level at which a moderator could use the sorter to triage. With roughly 36 test
+posts each one is worth about 2.8 points, so a seed-to-seed spread of several
+points is expected and the all-three-seeds rule makes this stricter than it
+looks.
 
 ---
 
-## 3.
+## 2. Every label performs, with a looser bar for the smallest
 
-<!-- Your criterion. -->
+**Target:** on every seed, F1 **≥ 0.65 for `question`**, F1 **≥ 0.65 for `report`**,
+and F1 **≥ 0.50 for `take`**, each on the test split. If a label has zero
+support in a test split, its F1 is 0 and the criterion is MISSED for that seed
+with the cause recorded as the split.
 
+**Measured by:** `results.json["per_label"][label]["f1"]` (support is stored
+beside it).
 
-
-**Why this target:**
-
-
-
----
-
-## 4.
-
-<!-- Your criterion. -->
-
-
-
-**Why this target:**
-
-
+**Why this target:** `take` was 18% of the research sample and is being
+sampled up toward about 22%, which still leaves only 7–8 `take` posts in a
+test split; one missed post there moves F1 by more than ten points, so its bar
+is set at 0.50 rather than pretending the measurement is as precise as for the
+labels with 10–19 test examples. The 0.65 bars for the other two exist so the
+model cannot pass criterion 1 by learning only the question-mark cue.
 
 ---
 
-## 5.
+## 3. Balance: no label dominates, and the smallest label is measurable
 
-<!-- Your criterion. -->
+**Target:** **no label exceeds 60%** of the rows in `labels.csv`, **and the
+smallest label has at least 8 posts in the test split** of every seed.
 
+**Measured by:** label counts printed by `validate_dataset.py` and by notebook
+section 2 for the 60% part; the section 3 split table (seed 42) and
+`results.json["per_label"][label]["support"]` for each seed for the 8-post part.
 
+**Why this target:** the brief's cap is 70%; 60% leaves a margin so criterion
+1 cannot be met by majority guessing. Eight test examples is the notebook's own
+"thin" threshold, below which per-label F1 is noise; reaching it for `take`
+needs about 54 `take` posts in the file, which the natural 18% rate does not
+supply at 240 posts, so this criterion is what forces the deliberate `take`
+sampling documented in the README.
 
-**Why this target:**
+---
 
+## 4. Two labellers agree under the written rules
 
+**Target:** on the 20 posts in `data/cold_label_queue.csv`, labelled first by
+the student without any AI label in view and then, blind to those answers, by
+the assistant under the rules in `docs/label_taxonomy.md`, the two label sets
+agree on **at least 16 of 20 (≥ 80%)**. Until both sets exist the criterion is
+**not measurable and counts as MISSED** with the reason "not yet measured";
+it is never MET by default.
+
+**Measured by:** a direct comparison of the two 20-row label lists (a small
+script in unit 6 prints agreement and Cohen's kappa; kappa is reported but is
+not the criterion). The unit 6 staff-set agreement uses a different taxonomy
+and is reported separately, not here.
+
+**Why this target:** the taxonomy's rules were written so that two readers
+apply them the same way; the Milestone 2 audit found 7 borderline posts in 38
+(about one in five), and 80% on twenty posts allows for exactly that rate. If
+agreement lands at 70–75% the fix is a rule revision, not a lower number.
+
+---
+
+## 5. Confidence means something
+
+**Target:** on every seed, accuracy among the **most-confident third** of test
+predictions is **≥ 0.85**, **and** it exceeds accuracy among the
+least-confident third by **at least 0.15**. Confidence is the softmax
+probability of the predicted label. If `n_per_third` is under 5 the criterion
+is MISSED with that reason.
+
+**Measured by:** `results.json["confidence"]["accuracy_most_confident_third"]`,
+`["accuracy_least_confident_third"]` and `["n_per_third"]`, written by notebook
+section 5. (The notebook does not save per-post probabilities, so a
+probability-threshold version such as "predictions above 0.90 are right 90% of
+the time" cannot be computed from the committed files; the thirds form is used
+because it can. See docs/criteria_proposals.md, area 5.)
+
+**Why this target:** a confidence score is only useful if the sure cases can be
+trusted more than the unsure ones. With about 12 posts per third, 0.85 allows
+one error in the sure third, and the 0.15 gap rules out a model that is equally
+right everywhere, whose confidence would carry no information. Both halves are
+needed; either alone is easy to satisfy by accident.
 
 ---
 
