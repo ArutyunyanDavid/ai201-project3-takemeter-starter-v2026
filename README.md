@@ -291,19 +291,82 @@ notebook, which hits race reports hardest.
 
 <!-- Your starting model, your settings, and anything you changed and why. -->
 
-<!-- PLACEHOLDER — Milestone 5 (not yet done). No model has been trained. -->
+> **Status (14 October 2026): PROVISIONAL RUN.** This run used the AI-pre-labelled
+> `labels.csv` before any of my own review and without the 20 cold posts. It
+> proves the pipeline end to end and gives a first number; it must be re-run
+> on the corrected file, and the numbers below will be replaced then.
 
-**Base model:**
+**Base model:** `distilbert-base-uncased` (the notebook default), fine-tuned
+for 3-way sequence classification.
 
 **Settings:** <!-- epochs, learning rate, batch size, seed -->
+epochs 3, learning rate 2e-5, batch size 16, max length 128 tokens, seed 42
+(all notebook defaults). Label map by list position: `question` = 0,
+`report` = 1, `take` = 2.
 
-**Anything I changed from the defaults, and why:**
+**Anything I changed from the defaults, and why:** Nothing in the training
+configuration. Two environment facts worth recording: the run used Python
+3.13.15 in the project `.venv` with torch 2.11.0+cu128 on
+`cuda` (NVIDIA GeForce RTX 4060 Laptop GPU); and `pyarrow` is pinned to 20.0.0 in
+that environment because Windows Application Control blocked a DLL in the
+26.0.0 wheel, which stopped `datasets` from importing. Neither changes what the
+model sees. The notebook was executed in place through its first five
+sections only (unit 6 cells untouched) using the `.venv` kernel.
 
 **Split sizes:** <!-- train / val / test, and per-label counts in the test
 split. If a label had fewer than about 8 in test, say so — it explains a lot
 of next unit's variance. -->
+train 186 / val 41 / test 41, stratified by label, seed 42.
 
+| Label | Train | Val | Test |
+|---|---|---|---|
+| `question` | 104 | 23 | 23 |
+| `report` | 39 | 9 | 9 |
+| `take` | 43 | 9 | 9 |
 
+No label had fewer than 8 posts in the test split, so the notebook raised no thin-label note.
+The pre-training check reported no [look at] or [FIX ME] lines.
+
+**Output artefacts:** `results.json` (accuracy, macro F1, per-label precision /
+recall / F1 / support, confusion counts, confidence thirds, device, torch
+version, max length) and `test_split.csv` (the 41 held-out posts, text
+and label, which `baseline.py` reads next unit). Both committed. The notebook's
+checkpoints go to `takemeter_out/`, which is git-ignored.
+
+**Truncation warning:** the model reads only the first 128 tokens of each
+post. Under the DistilBERT tokenizer, 87 of 150 `question`
+posts (58%), 53 of 57 `report` posts
+(93%) and 51 of 61 `take` posts (84%)
+are longer than that (median lengths 149 / 1064 / 282
+tokens). Race reports are the hardest hit: the template header and goals table
+fill the window, and the outcome, lessons and any closing ask — the signals the
+taxonomy's rule 1 depends on — fall outside it. The model is therefore learning
+`report` largely from openings. Raising MAX_LENGTH to 256 is the obvious
+unit 6 experiment; it roughly doubles time and memory.
+
+**What the run shows:** training loss fell 1.040 → 0.981 → 0.892 over the
+three epochs, but validation accuracy stayed at 0.561 after every epoch, which
+is exactly the `question` share of the validation split, and the confusion
+counts in `results.json` show every one of the 41 test posts predicted
+`question`. With 186 training posts and batch size 16, three epochs are
+about 36 optimizer steps at 2e-5, and the model never left the majority-class
+solution. This is a genuine result of the default settings on this dataset,
+not a bug: the label check passed, the split is stratified, and the loss moves
+in the right direction. It was **not** re-run with other settings, because a
+change made after reading these numbers would be tuning against the test
+split. Candidates for the unit 6 improvement step, recorded now before the
+three-seed runs: more epochs (8–10), a higher learning rate (5e-5), or
+MAX_LENGTH 256 for the race reports.
+
+**Numbers from this provisional run** (copied from `results.json`, unrounded
+there): accuracy 0.561, macro F1 0.240; per-label F1
+`question` 0.719 (n=23),
+`report` 0.000 (n=9),
+`take` 0.000 (n=9); most-confident
+third accuracy 0.846 vs least-confident third
+0.462 (n per third 13).
+Not a verdict on the criteria: unit 6 does that across three seeds, on the
+reviewed dataset.
 
 ---
 
@@ -358,6 +421,19 @@ of next unit's variance. -->
   added from opinion-heavy listings and that choice is documented as a bias.
 - *What I changed:* <!-- student: record your corrections to the AI labels
   here (how many rows, which direction) once you have reviewed them. -->
+
+**Milestone 5 — training run (14 October 2026)**
+
+- *What I asked for:* build the `.venv`, run `test.py`, set the notebook's
+  name, email and labels, and execute sections 1–5 on the real `labels.csv`
+  with the default settings.
+- *What came back:* a passing environment check (Python 3.13.15, CUDA torch
+  2.11.0+cu128 on the laptop GPU), one pyarrow pin to get round an
+  Application Control block, and a completed run that wrote `results.json`
+  and `test_split.csv`. The assistant also measured how many posts exceed the
+  128-token window, which turned out to matter most for `report`.
+- *What I changed:* <!-- student: after your label review, re-run sections
+  1–5 and note here whether the numbers moved. -->
 
 **Moment 1**
 
