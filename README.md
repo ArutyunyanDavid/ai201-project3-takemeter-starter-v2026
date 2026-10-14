@@ -42,6 +42,19 @@
 <!-- Your community, and what your classifier sorts posts into. Three or four
      sentences. -->
 
+TakeMeter classifies standalone posts from **r/running**
+(<https://www.reddit.com/r/running/>), Reddit's general running community of
+over four million subscribers, where members post training questions, race
+reports, gear questions and opinions about running culture. The classifier
+sorts each post by what it is *doing*: the Milestone 1 reading found that the
+most consistently observable differences between posts are whether a post asks
+the community for something, reports the writer's own experience, or asserts a
+general claim. The exact labels are defined in Milestone 2 below.
+AutoModerator and recurring scheduled threads are out of scope.
+
+*Research record:* [docs/community_review.md](docs/community_review.md) — 40
+real posts with links, the sampling method, and the candidate distinctions.
+
 
 
 ---
@@ -53,6 +66,9 @@
 
      The decision rule is worth a point on its own and it's the thing most
      people leave out. Every taxonomy has a hardest boundary. Name yours. -->
+
+<!-- PLACEHOLDER — Milestone 2 (not yet done). Labels will be built from the
+     distinctions recorded in docs/community_review.md, section 6. -->
 
 ### `label_one`
 
@@ -90,6 +106,9 @@
 
 <!-- Where you collected from, how you labelled, your counts, and three hard
      cases. -->
+
+<!-- PLACEHOLDER — Milestone 4 (not yet done). No posts have been collected or
+     labelled yet. Nothing below is filled in on purpose. -->
 
 **Where the posts came from:**
 
@@ -137,6 +156,8 @@ Say so plainly — the disclosure is required, not penalised. -->
 
 <!-- Your starting model, your settings, and anything you changed and why. -->
 
+<!-- PLACEHOLDER — Milestone 5 (not yet done). No model has been trained. -->
+
 **Base model:**
 
 **Settings:** <!-- epochs, learning rate, batch size, seed -->
@@ -159,6 +180,23 @@ of next unit's variance. -->
      batch and then read and corrected every one, say that. It's an allowed
      workflow and disclosing it costs you nothing. Not disclosing it is the
      problem. -->
+
+<!-- Filled in as the project goes. Milestone 1 entry below; later milestones
+     add theirs. -->
+
+**Milestone 1 — community research (14 October 2026)**
+
+- *What I asked for:* an AI assistant (Claude) to evaluate r/running,
+  r/boardgames and r/nba against the brief, fetch a varied sample of real
+  posts from the chosen community, and record for each post what is
+  observable in its text.
+- *What came back:* r/nba's top posts turned out to be mostly clips and quote
+  cards with no body text (19 of 25), r/boardgames was about a quarter image
+  posts, and r/running was almost all text; 40 r/running posts with links and
+  four candidate distinctions, in `docs/community_review.md`.
+- *What I changed:* <!-- student: record here what you corrected after reading
+  the posts yourself, e.g. a summary you disagreed with or a characteristic
+  code you changed. Leave nothing here only if you changed nothing. -->
 
 **Moment 1**
 
