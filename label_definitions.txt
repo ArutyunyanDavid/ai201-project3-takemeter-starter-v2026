@@ -1,10 +1,8 @@
 # Your label definitions, one per line, as `label: definition`.
 #
-# Copy these from your README so the baseline is judged on exactly the
-# definitions you wrote. baseline.py reads this file.
-#
-# Delete the examples below and put yours in.
+# Copied from README.md, Label Taxonomy (Milestone 2). baseline.py reads this
+# file in unit 6. Keep these identical to the README definitions.
 
-analysis: makes an argument backed by a specific, checkable fact
-hot_take: a confident claim with no support offered
-reaction: an immediate response to something that just happened
+question: the post exists to get something from readers - an answer, advice, a recommendation, a verdict on the writer's own situation, or others' experiences - and whatever else it contains is there to set that request up
+report: the post's substance is a firsthand account of something the writer did or went through - a race, a training block, a product or method they used, a streak, a change of attitude - told with its specifics and its outcome, and it stands complete without replies
+take: the post's substance is a claim or argument about running, runners, races, training methods, running culture or an event, going beyond the writer's own case, put forward for readers to agree or argue with rather than to answer or to witness

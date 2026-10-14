@@ -45,15 +45,18 @@
 TakeMeter classifies standalone posts from **r/running**
 (<https://www.reddit.com/r/running/>), Reddit's general running community of
 over four million subscribers, where members post training questions, race
-reports, gear questions and opinions about running culture. The classifier
-sorts each post by what it is *doing*: the Milestone 1 reading found that the
-most consistently observable differences between posts are whether a post asks
-the community for something, reports the writer's own experience, or asserts a
-general claim. The exact labels are defined in Milestone 2 below.
-AutoModerator and recurring scheduled threads are out of scope.
+reports, gear questions and opinions about running culture. It sorts each post
+by what the post is *doing*: a **`question`** asks the community for an answer,
+advice, a recommendation or others' experiences; a **`report`** is a firsthand
+account of something the writer did, with its outcome; a **`take`** is a claim
+or argument about running, runners, races or events beyond the writer's own
+case. AutoModerator threads, recurring scheduled threads, and link-only posts
+with under two sentences of the poster's own words are out of scope.
 
 *Research record:* [docs/community_review.md](docs/community_review.md) — 40
 real posts with links, the sampling method, and the candidate distinctions.
+*Taxonomy record:* [docs/label_taxonomy.md](docs/label_taxonomy.md) and
+[docs/taxonomy_stress_test.md](docs/taxonomy_stress_test.md).
 
 
 
@@ -67,38 +70,106 @@ real posts with links, the sampling method, and the candidate distinctions.
      The decision rule is worth a point on its own and it's the thing most
      people leave out. Every taxonomy has a hardest boundary. Name yours. -->
 
-<!-- PLACEHOLDER — Milestone 2 (not yet done). Labels will be built from the
-     distinctions recorded in docs/community_review.md, section 6. -->
+**Community:** r/running. Post numbers below refer to the table in
+[docs/community_review.md](docs/community_review.md); every example is a real
+post with its permalink. Full definitions, signals, exclusions and the audit
+of all 40 posts are in [docs/label_taxonomy.md](docs/label_taxonomy.md).
 
-### `label_one`
+### `question`
 
-**Definition:**
+**Definition:** The post exists to get something from readers — an answer,
+advice, a recommendation, a verdict on the writer's own situation, or others'
+experiences — and whatever else it contains is there to set that request up.
 
-**Example 1:**
->
+**Example 1:** post 20 — [Should a beginner ditch speed training?](https://www.reddit.com/r/running/comments/1x3v0k6/should_a_beginner_ditch_speed_training/)
+> BACKGROUND: Hello! I am a 23 y/o, 88 kg male with Stage 1 Hypertension
+> (controlled) and no prior sports background. I have been running for 15 weeks
+> now […] As a beginner, is it okay to ditch speed training for now and focus on
+> Zone 2-3 training? […] Should I trust my HR and switch to brisk walking
+> instead? Or should I trust my perceived exertion […]?
 
-**Example 2:**
->
+**Example 2:** post 12 — [Garmin or Strava prediction: which is more accurate?](https://www.reddit.com/r/running/comments/1wrosne/garmin_or_strava_prediction_which_is_more_accurate/)
+> I have a half marathon in two weeks time and am at the end of my training
+> block. There's a 7 minute difference between my Garmin estimated time and my
+> Strava estimated time. They have the same input. […] Questions: Which do you
+> value more? Why do you think they vary so much?
 
-### `label_two`
+### `report`
 
-**Definition:**
+**Definition:** The post's substance is a firsthand account of something the
+writer did or went through — a race, a training block, a product or method
+they used, a streak, a change of attitude — told with its specifics and its
+outcome, and it stands complete without replies.
 
-**Example 1:**
->
+**Example 1:** post 8 — [Race Report - Loch Ness Marathon - PB, BQ, SUB 3](https://www.reddit.com/r/running/comments/1wuzdvc/race_report_loch_ness_marathon_pb_bq_sub_3/)
+> Race: 2026 Loch Ness Marathon Date: September 27, 2026 Time: 2:58:34 Goals
+> […] A PB (Sub 3:20) Yes B BQ (Sub 3:05) Yes C Sub 3 Yes Background I have had
+> a on again/off again relationship with running over the years […]
 
-**Example 2:**
->
+**Example 2:** post 5 — [I successfully reverse-engineered Maurten Gel 100](https://www.reddit.com/r/running/comments/1whzccf/i_successfully_reverseengineered_maurten_gel_100/)
+> TL;DR: I perfected a DIY Maurten Gel 100 clone using the exact same
+> internal-gelation mechanism (Sodium Alginate + Calcium Carbonate + GDL). This
+> recipe makes a 10-serving batch. Each 50g pouch delivers exactly 25g of
+> carbohydrates at a 0.8:1 Fructose-to-Glucose ratio […]
+
+### `take`
+
+**Definition:** The post's substance is a claim or argument about running,
+runners, races, training methods, running culture or an event, going beyond
+the writer's own case, put forward for readers to agree or argue with rather
+than to answer or to witness.
+
+**Example 1:** post 16 — [Norwegian Singles Method. A suboptimal approach](https://www.reddit.com/r/running/comments/1wtk6v6/norwegian_singles_method_a_suboptimal_approach/)
+> I've got a hot take for the Norwegian Singles Method that might ruffle some
+> feathers. […] I think NSM is heading down the same road as cycling and FTP.
+> […] Is it going to leave a lot of people significantly below their true
+> potential. I think so.
+
+**Example 2:** post 34 — [LA Marathon men's finish was wild-and coverage was terrible!](https://www.reddit.com/r/running/comments/1roa4ql/la_marathon_mens_finish_was_wildand_coverage_was/)
+> American Nathan Martin won the LA Marathon this morning in 2:11:18, coming
+> from behind in a massive sprint to the finish. At least I think that's what
+> happened, because the coverage was absolutely terrible.
 
 ### The hardest boundary
 
-**Which two labels:**
+**Which two labels:** `question` vs `report` — a finished account that ends by
+asking for feedback. The post: post 15, [my first marathon - an immediate
+reflection & seeking feedback](https://www.reddit.com/r/running/comments/1wxukty/my_first_marathon_an_immediate_reflection_seeking/)
+— about 10,500 characters of race report (Higdon Novice 1, cramping from mile
+18, first 17 miles in 133 minutes, last 9.2 in 108) ending with "I think it was
+predominantly neuromuscular fatigue. Agree/disagree? […] Don't pull your
+punches here, I am here to learn from your wisdom and experience!" The title
+and the explicit request for advice argue for `question`; nine-tenths of the
+words, an outcome, and the writer's own diagnosis and plan argue for `report`.
+**Chosen: `report`.** *(Student confirmation pending — see
+docs/label_taxonomy.md section 8.)*
 
 **The decision rule I used every time:**
 <!-- e.g. "If the post names a specific checkable fact, it's `analysis`, even
      if the tone is heated." -->
 
+Strike every sentence that asks readers for something. If nothing of substance
+is left, it is `question`. Otherwise: if what is left is **closed** — an
+account with its outcome and the writer's own conclusion, or a claim stated
+with its reasons — it is `report` or `take`; if what is left is **open** — a
+problem unsolved, a choice unmade, a thing not yet found — it is `question`.
+Titles such as "question" or "seeking feedback" do not override the body, and a
+single open line inside an otherwise closed account is an aside. Between
+`report` and `take`: conclusions about the writer's own case (their race, their
+plan, the product they used) are `report`; a claim about running beyond the
+writer's case, with their experience offered as evidence, is `take`. Only if
+both rules leave two labels standing, label by where most of the words are.
 
+**How AI helped test the definitions:** the assistant (Claude) applied the
+rules to all 40 real posts from Milestone 1 (audit table in
+docs/label_taxonomy.md, 7 of 38 eligible posts borderline, none unresolved)
+and wrote eight synthetic boundary posts — clearly marked as not real, in
+docs/taxonomy_stress_test.md — covering a finished race with a feedback
+request, an opinion phrased as a question, own experience used as proof of a
+general claim, and a closed story under a title that says "question". One
+revision came out of testing: the first version of the rule said "complete
+report or argument", which misfiled a gear-recommendation post whose body
+complained about pricing; it was rewritten around open vs closed.
 
 ---
 
@@ -197,6 +268,19 @@ of next unit's variance. -->
 - *What I changed:* <!-- student: record here what you corrected after reading
   the posts yourself, e.g. a summary you disagreed with or a characteristic
   code you changed. Leave nothing here only if you changed nothing. -->
+
+**Milestone 2 — taxonomy and boundary testing (14 October 2026)**
+
+- *What I asked for:* labels grounded in the Milestone 1 posts, a decision
+  rule for the hardest boundary with both sides argued, eight synthetic
+  boundary posts, and an audit of the rules against every real post read.
+- *What came back:* three labels (`question`, `report`, `take`) with real
+  examples, the open/closed rule, the audit in `docs/label_taxonomy.md`, and
+  the eight synthetic posts in `docs/taxonomy_stress_test.md`. The first rule
+  draft failed on a real gear-question post and was rewritten (revision log
+  in the taxonomy file).
+- *What I changed:* <!-- student: after classifying the eight synthetic posts
+  yourself and confirming the post-15 call, record here what you changed. -->
 
 **Moment 1**
 
