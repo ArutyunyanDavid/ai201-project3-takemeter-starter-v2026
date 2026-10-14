@@ -178,22 +178,56 @@ complained about pricing; it was rewritten around open vs closed.
 <!-- Where you collected from, how you labelled, your counts, and three hard
      cases. -->
 
-<!-- PLACEHOLDER — Milestone 4 (not yet done). No posts have been collected or
-     labelled yet. Nothing below is filled in on purpose. -->
+> **Status (14 October 2026): PROVISIONAL.** Every label below was assigned by
+> an AI assistant (Claude) under the rules in docs/label_taxonomy.md and has
+> **not yet been reviewed by me**. The 20 cold posts are reserved in
+> `data/cold_label_queue.csv` and are not in `labels.csv` until I label them.
+> After my review the training run must be repeated on the corrected file.
 
-**Where the posts came from:**
+**Where the posts came from:** r/running, read through Reddit's public Atom
+feeds (`/r/running/<listing>/.rss`) on 14 October 2026 with 60–90 seconds
+between requests; the JSON API refuses scripted access. 610 unique posts were
+pulled from the top-of-year (two pages of 100), top-of-month, newest, hot and
+top-of-all-time listings and from three in-subreddit searches (flair
+Discussion, year and all time; "unpopular opinion / hot take / rant / PSA").
+Excluded by rule before labelling: AutoModerator and recurring scheduled
+threads, and posts whose body is a link or copied article with under two
+sentences of the poster's own words. The **core** of the dataset is every
+eligible post from the general listings (191 read, 185 kept, dated
+Oct 2025–Oct 2026). Because that core came out **76% `question`**, over the
+brief's 70% cap, 100 further candidates were read from the search listings and
+top-of-all-time pages, and every `report` and `take` among them was added
+(73 posts), plus the 10 pre-2025 `question` posts from the same pools so the
+older era is not all one label. Each row's text is the post title, a blank
+line, then the full body, untrimmed. Provenance for every post read, included
+or not, is in `data/source_manifest.csv` (post id, permalink, date, listing,
+selection group, label, reason), joined to `labels.csv` by a hash of the text.
 
 **How I labelled them:** <!-- Cold first? Pre-labelled with AI and corrected?
 Say so plainly — the disclosure is required, not penalised. -->
+Pre-labelled by AI, correction pending. The assistant read each post (title and
+body; for posts over about 3,000 characters the opening and the final 700
+characters in full and the race narrative in between skimmed) and applied rule
+1 (open/closed), rule 2 (whose case) and the word-share tie-break from the
+Label Taxonomy. Every `note` reads `ai_prelabel; human_review_pending`; the 72
+rows the assistant judged borderline also name the competing label and the
+reason. **I have not yet labelled anything cold.** My 20 cold posts are drawn
+at random from the core (excluding the 39 posts already shown with labels in
+Milestone 2) and sit in `data/cold_label_queue.csv` with no labels or hints.
+`validate_dataset.py` checks the file (columns, empties, labels, duplicates,
+the 70% cap, provenance coverage) and passes.
 
 **Counts per label:**
 
 | Label | Count | Share |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-| **Total** |  | 100% |
+| `question` | 150 | 56.0% |
+| `report` | 57 | 21.3% |
+| `take` | 61 | 22.8% |
+| **Total** | 268 | 100% |
+
+No label exceeds 60%. In a 15% test split about 9 `take` and 9 `report` posts
+land, just above the notebook's "thin" threshold of 8.
 
 **Three hard cases**
 
@@ -201,25 +235,55 @@ Say so plainly — the disclosure is required, not penalised. -->
      been, and what you chose. These are worth more than the easy 190. -->
 
 **1.**
-> *The post:*
+> *The post:* `1wxukty` — "my first marathon - an immediate reflection & seeking
+> feedback": 10,500 characters of race report ending "I think it was
+> predominantly neuromuscular fatigue. Agree/disagree? […] Don't pull your
+> punches here, I am here to learn from your wisdom and experience!"
 >
-> *Could have been:*
+> *Could have been:* `report` or `question`.
 >
-> *I chose, because:*
+> *I chose, because:* `report` (AI call, awaiting my confirmation). Strike the
+> asks and what is left is closed: race run, own diagnosis stated, plan made.
+> The title's "seeking feedback" does not override the body, or every race
+> report that ends with "thoughts?" would flip.
 
 **2.**
-> *The post:*
+> *The post:* `lvi0qd` — "PSA: Get a blood test!": a detailed account of
+> sudden slowdowns, a haemoglobin of 6 and an emergency transfusion, ending
+> "If you find that your performance suffers all of a sudden, please consider
+> a blood test."
 >
-> *Could have been:*
+> *Could have been:* `take` or `report`.
 >
-> *I chose, because:*
+> *I chose, because:* `take` (AI call). The claim is addressed to all runners
+> and the story is told as evidence for it; rule 2 is applied before word
+> share, even though the narrative is about 85% of the words. Six other
+> "PSA + story" posts were labelled the same way for consistency; the student
+> can move all seven together if they prefer the word-share reading.
 
 **3.**
-> *The post:*
+> *The post:* `1r32xpy` — "How to not let running & past race performances
+> become your part of your self-identity?": 3,600 characters on burnout, a
+> sold marathon bib and guilt, ending "Not sure where to go from here […] Can
+> anyone relate & empathize with any of this? Any feedback, thoughts??"
 >
-> *Could have been:*
+> *Could have been:* `question` or `report`.
 >
-> *I chose, because:*
+> *I chose, because:* `question` (AI call). Despite the long narrative the
+> situation is unresolved and the post asks for feedback; open → `question`.
+> Contrast case 1, where the account ends in a conclusion.
+
+More cases, the full selection logic and the list of excluded posts are in
+[docs/labeling_decisions.md](docs/labeling_decisions.md).
+
+**Sampling bias and limitations:** `report` and `take` are over-represented
+relative to the community (the natural standalone-post mix in 2025–26 is about
+three-quarters questions). About half of the `report` rows and most of the
+`take` rows come from 2011–2024 because that is where opinion posts and PSAs
+were found, while nearly every `question` is from 2025–26; a model could learn
+era cues as a proxy for label. Six very short thread-starter posts are labelled
+`question` and marked borderline. Posts over 128 tokens are truncated by the
+notebook, which hits race reports hardest.
 
 ---
 
@@ -282,6 +346,19 @@ of next unit's variance. -->
 - *What I changed:* <!-- student: after classifying the eight synthetic posts
   yourself and confirming the post-15 call, record here what you changed. -->
 
+**Milestone 4 — collection and pre-labelling (14 October 2026)**
+
+- *What I asked for:* collect 220–250 real r/running posts within Reddit's
+  access rules, reserve 20 for my cold labelling, pre-label the rest under the
+  written rules, keep provenance for every post, and validate the file.
+- *What came back:* 610 unique posts fetched from public feeds; 291 read in
+  full; `labels.csv` with 268 rows, a manifest of all 311 posts touched, a
+  20-post cold queue, `validate_dataset.py`, and `docs/labeling_decisions.md`.
+  The core listings were 76% questions, so `report` and `take` posts were
+  added from opinion-heavy listings and that choice is documented as a bias.
+- *What I changed:* <!-- student: record your corrections to the AI labels
+  here (how many rows, which direction) once you have reviewed them. -->
+
 **Moment 1**
 
 - *What I asked for:*
@@ -294,7 +371,12 @@ of next unit's variance. -->
 - *What came back:*
 - *What I changed:*
 
-**Pre-labelling disclosure:**
+**Pre-labelling disclosure:** All 268 rows in `labels.csv` were pre-labelled
+by an AI assistant (Claude) on 14 October 2026 under the rules in
+docs/label_taxonomy.md. As of this commit **none has been read and corrected
+by me**; every `note` says `human_review_pending`. The 20 cold posts in
+`data/cold_label_queue.csv` have not been labelled by anyone. When I finish
+both, this line will say how many AI labels I changed.
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
 
