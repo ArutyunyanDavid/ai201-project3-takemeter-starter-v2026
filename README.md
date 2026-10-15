@@ -392,11 +392,9 @@ reviewed dataset.
   cards with no body text (19 of 25), r/boardgames was about a quarter image
   posts, and r/running was almost all text; 40 r/running posts with links and
   four candidate distinctions, in `docs/community_review.md`.
-- *What I changed:* **[Draft — confirm the two numbers before submitting.]**
-  I read [40] of the 40 linked posts and spent about [20] minutes reading the
-  subreddit itself. I agreed with most of the summaries. The thing I noticed
-  on my own is how often a post mixes a factual report with a personal
-  opinion, which is exactly the `report` / `take` boundary.
+- *What I changed:* Nothing in the research file. I kept the 40-post sample,
+  the summaries and the four distinctions as recorded, and the eligibility
+  rules that drop AutoModerator threads and link-only posts.
 
 
 **Milestone 2 — taxonomy and boundary testing (14 October 2026)**
@@ -409,10 +407,9 @@ reviewed dataset.
   the eight synthetic posts in `docs/taxonomy_stress_test.md`. The first rule
   draft failed on a real gear-question post and was rewritten (revision log
   in the taxonomy file).
-- *What I changed:* **[Draft — confirm after classifying the eight synthetic
-  posts yourself.]** I classified the eight synthetic posts and agreed with [7]
-  of 8. I kept post 15 as `report` because it mostly describes a personal
-  experience and only asks for feedback at the end.
+- *What I changed:* Nothing in the taxonomy. I kept the three labels, the
+  open/closed rule, and the `report` call on post 15: the post mostly
+  describes a personal experience and only asks for feedback at the end.
 
 
 **Milestone 4 — collection and pre-labelling (14 October 2026)**
@@ -425,11 +422,10 @@ reviewed dataset.
   20-post cold queue, `validate_dataset.py`, and `docs/labeling_decisions.md`.
   The core listings were 76% questions, so `report` and `take` posts were
   added from opinion-heavy listings and that choice is documented as a bias.
-- *What I changed:* **[Draft — `labels.csv` has not been changed yet; the
-  counts below are examples, replace them after your review.]** I reviewed all
-  72 borderline posts and the other 196. I changed [12] labels: [7] from `take`
-  to `report`, [3] from `question` to `report` and [2] from `report` to `take`.
-  I labelled the 20 cold posts before looking at any AI label.
+- *What I changed:* Nothing yet. All 268 labels in `labels.csv` are still the
+  assistant's, and the 20 cold posts are still unlabelled. My review of the 72
+  borderline rows and my cold labels are the next step, and this line will
+  record how many labels I changed.
 
 
 **Milestone 5 — training run (14 October 2026)**
@@ -442,11 +438,9 @@ reviewed dataset.
   Application Control block, and a completed run that wrote `results.json`
   and `test_split.csv`. The assistant also measured how many posts exceed the
   128-token window, which turned out to matter most for `report`.
-- *What I changed:* **[Draft — no re-run has happened yet; 0.632 and 0.401 are
-  examples, not results.]** After the corrections I re-ran sections 1 to 5.
-  Accuracy went from 0.561 to [0.632] and macro F1 from 0.240 to [0.401]. The
-  model [started to separate the three labels / still predicted only
-  `question`].
+- *What I changed:* Nothing yet. The run reported above is the provisional
+  one on the unreviewed labels. After my review I will re-run sections 1 to 5
+  and record here whether the numbers moved.
 
 
 **Moment 1**
@@ -466,10 +460,7 @@ by an AI assistant (Claude) on 14 October 2026 under the rules in
 docs/label_taxonomy.md. As of this commit **none has been read and corrected
 by me**; every `note` says `human_review_pending`. The 20 cold posts in
 `data/cold_label_queue.csv` have not been labelled by anyone. When I finish
-both, this line will say how many AI labels I changed. **[Draft for that line —
-example figure, not yet true:]** I reviewed every row and changed [12] of the
-268 AI labels. The 20 cold posts were labelled by me without looking at the AI
-labels.
+both, this line will say how many AI labels I changed.
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
 
