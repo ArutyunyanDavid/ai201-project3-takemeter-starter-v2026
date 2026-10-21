@@ -474,20 +474,35 @@ both, this line will say how many AI labels I changed.
 <!-- Both models on the same posts. `python baseline.py --trained results.json`
      prints this table for you. -->
 
-| Measure | Baseline | Trained | Difference |
+| Measure | Baseline | Trained | Difference (trained − baseline) |
 |---|---|---|---|
-| Overall accuracy |  |  |  |
-| Macro F1 |  |  |  |
-| F1 — `label_one` |  |  |  |
-| F1 — `label_two` |  |  |  |
+| Overall accuracy | 0.537 | 0.561 | +0.024 |
+| Macro F1 | 0.553 | 0.240 | −0.314 |
+| F1 — `question` | 0.579 | 0.719 | +0.140 |
+| F1 — `report` | 0.667 | 0.000 | −0.667 |
+| F1 — `take` | 0.414 | 0.000 | −0.414 |
+
+Both models were scored on the same 41 posts in `test_split.csv`. The baseline
+used the exact three definitions from the Label Taxonomy through
+`label_definitions.txt`.
 
 **What I predicted before I looked:**
 <!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
      prediction made afterwards isn't one. -->
 
+No prospective prediction was recorded. `results.json` and its trained metrics
+were already present in this repository before I ran the baseline, so writing a
+prediction now would be retrospective.
+
 **What the gap actually means:**
 <!-- If the baseline matched your trained model, your fine-tuning added
      nothing — and that is a real finding, not a failure. Say it plainly. -->
+
+Fine-tuning raised accuracy by only 0.024 and `question` F1 by 0.140, but it
+lowered macro F1 by 0.314 because the trained model never predicted `report`
+or `take`. The definition-only baseline recognized all three labels and was
+substantially better on the two minority labels, so this training run did not
+add useful three-class discrimination.
 
 
 
@@ -497,6 +512,16 @@ both, this line will say how many AI labels I changed.
 
 <!-- Five criteria across three seeds. The notebook's section 6 prints the
      spread table; the Target and Verdict columns are yours. -->
+
+The notebook's section 6 produced this metric spread:
+
+| Measure | Seed 42 | Seed 7 | Seed 2024 | Spread |
+|---|---|---|---|---|
+| Overall accuracy | 0.561 | 0.561 | 0.561 | 0.000 |
+| Macro F1 | 0.240 | 0.240 | 0.240 | 0.000 |
+| F1 — `question` | 0.719 | 0.719 | 0.719 | 0.000 |
+| F1 — `report` | 0.000 | 0.000 | 0.000 | 0.000 |
+| F1 — `take` | 0.000 | 0.000 | 0.000 | 0.000 |
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
@@ -511,16 +536,27 @@ both, this line will say how many AI labels I changed.
 <!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
      An image of a matrix earns nothing. -->
 
-| true \ predicted |  |  |  |
+Section 7 prints the seed-42 matrix (the first run in the three-seed file):
+
+| true \ predicted | question | report | take |
 |---|---|---|---|
-| **** |  |  |  |
-| **** |  |  |  |
-| **** |  |  |  |
+| **question** | 23 | 0 | 0 |
+| **report** | 9 | 0 | 0 |
+| **take** | 9 | 0 | 0 |
 
 **My biggest off-diagonal number, and what it means:**
 <!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
      direction. "7 real analysis posts were called hot_take and only 3 went the
      other way" is a direction, not just an error rate. -->
+
+The largest off-diagonal count is tied: 9 real `report` posts and 9 real
+`take` posts were called `question`, while zero real `question` posts went in
+either reverse direction. Section 7 reports `report` → `question` because it
+is the first tied maximum; on that boundary, the model treated complete
+firsthand accounts as answer-seeking posts. Because it also sent every `take`
+to `question` and never predicted either minority label, the broader result is
+a collapse to the majority `question` class, not evidence of only one confused
+label pair.
 
 
 
