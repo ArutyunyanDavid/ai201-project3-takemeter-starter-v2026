@@ -3,6 +3,6 @@
 # Copied from README.md, Label Taxonomy (Milestone 2). baseline.py reads this
 # file in unit 6. Keep these identical to the README definitions.
 
-question: the post exists to get something from readers - an answer, advice, a recommendation, a verdict on the writer's own situation, or others' experiences - and whatever else it contains is there to set that request up
-report: the post's substance is a firsthand account of something the writer did or went through - a race, a training block, a product or method they used, a streak, a change of attitude - told with its specifics and its outcome, and it stands complete without replies
-take: the post's substance is a claim or argument about running, runners, races, training methods, running culture or an event, going beyond the writer's own case, put forward for readers to agree or argue with rather than to answer or to witness
+question: The post exists to get something from readers — an answer, advice, a recommendation, a verdict on the writer's own situation, or others' experiences — and whatever else it contains is there to set that request up.
+report: The post's substance is a firsthand account of something the writer did or went through — a race, a training block, a product or method they used, a streak, a change of attitude — told with its specifics and its outcome, and it stands complete without replies.
+take: The post's substance is a claim or argument about running, runners, races, training methods, running culture or an event, going beyond the writer's own case, put forward for readers to agree or argue with rather than to answer or to witness.
