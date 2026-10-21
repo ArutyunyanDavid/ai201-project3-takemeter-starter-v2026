@@ -443,17 +443,34 @@ reviewed dataset.
   and record here whether the numbers moved.
 
 
-**Moment 1**
+**Project 6, moment 1 — baseline and repeated evaluation**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* Claude Code copied the exact README definitions into the
+  baseline prompt, ran the zero-shot baseline on the committed test split, and
+  executed the notebook's three-seed and confusion-matrix sections without
+  overwriting the original single-run evidence.
+- *What came back:* the saved baseline, before-run JSON, typed matrices and all
+  metric calculations. It also caught that the old definition file had
+  normalized punctuation; rerunning with the exact text changed baseline
+  accuracy from 0.488 to 0.537, so only the corrected run was retained.
+- *What I changed:* I kept the measured results and required the README to say
+  that no prospective baseline prediction had been recorded instead of
+  inventing one after seeing the trained score.
 
-**Moment 2**
+**Project 6, moment 2 — diagnosis and one-variable experiment**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* Claude Code checked the five original criteria against
+  the JSON files, diagnosed the all-`question` collapse, recommended one
+  evidence-based change, ran it, verified the arithmetic, and organized the
+  before/after documentation.
+- *What came back:* a recommendation to change only epochs from 3 to 10, plus
+  three after runs whose accuracy is 0.780 / 0.805 / 0.829. The assistant
+  preserved hashes for the before evidence and did not lower any criterion.
+- *What I changed:* I accepted the one-variable epochs experiment. Claude Code
+  also drafted all 30 labels in `my_staff_labels.csv` from the public staff
+  taxonomy before any key was available; I instructed it to proceed, but I
+  have not adjudicated disagreements because `data/staff_labels.csv` is still
+  missing. No agreement number or personal judgment is being fabricated.
 
 **Pre-labelling disclosure:** All 268 rows in `labels.csv` were pre-labelled
 by an AI assistant (Claude) on 14 October 2026 under the rules in
@@ -525,11 +542,11 @@ The notebook's section 6 produced this metric spread:
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.70 on every seed | 0.561 | 0.561 | 0.561 | **MISSED** |
+| 2. Per-label F1 (`question` / `report` / `take`) | ≥ 0.65 / 0.65 / 0.50 on every seed | 0.719 / 0.000 / 0.000 | 0.719 / 0.000 / 0.000 | 0.719 / 0.000 / 0.000 | **MISSED** |
+| 3. Balance and test support | max share ≤ 60%; min test n ≥ 8 | 56.0%; min n = 9 | 56.0%; min n = 9 | 56.0%; min n = 9 | **MET** |
+| 4. Two-labeller cold-set agreement | ≥ 16/20 | not measured | not measured | not measured | **MISSED — not yet measured** |
+| 5. Confidence (most-third accuracy / gap over least-third) | ≥ 0.85 / ≥ 0.15 on every seed | 0.846 / 0.385 | 1.000 / 0.692 | 0.846 / 0.846 | **MISSED** |
 
 ### Confusion matrix
 
@@ -569,11 +586,11 @@ label pair.
 
 | # | Criterion | Target | Verdict | How I decided |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| 1 | Overall accuracy | ≥ 0.70 on all three seeds | **MISSED** | Every seed scored 23/41 = 0.561. |
+| 2 | Every label performs | `question` ≥ 0.65, `report` ≥ 0.65, `take` ≥ 0.50 on all seeds | **MISSED** | `question` F1 was 0.719, but `report` and `take` F1 were 0.000 on every seed. |
+| 3 | Balance and test support | no label over 60%; smallest test support ≥ 8 on all seeds | **MET** | `question` is the largest class at 150/268 = 56.0%; every test split had 23 / 9 / 9 posts, so the minimum was 9. |
+| 4 | Two-labeller agreement on my 20 cold posts | ≥ 16/20 | **MISSED — not yet measured** | The required two independent label sets for `data/cold_label_queue.csv` do not exist. The staff exercise uses another taxonomy and is not a substitute. |
+| 5 | Confidence means something | most-confident third ≥ 0.85 and at least 0.15 above least-confident third on all seeds | **MISSED** | The gaps passed on all seeds, but the most-confident third was 11/13 = 0.846 on seeds 42 and 2024, just below 0.85; seed 7 scored 1.000. |
 
 **Diagnoses**
 
@@ -585,6 +602,38 @@ label pair.
      ⚠️ Use your agreement report as evidence. It is the only instrument you
      have that can tell a LABELLING problem from a MODEL problem, and this
      section is graded on whether you used it that way. -->
+
+**Criteria 1 and 2 — majority-class collapse, with the exact cause uncertain.**
+All three models predicted `question` for all 41 test posts. That produced the
+same 0.561 accuracy and the same 0.000 F1 for `report` and `take` on every
+seed. Criterion 3 rules out missing test support or a class above 60% as the
+immediate explanation. The zero-shot baseline achieved 0.667 F1 on `report`
+and 0.414 on `take`, so the text and written definitions contain usable
+minority-label signals that the fine-tuned model did not learn.
+
+The evidence is consistent with under-training: three epochs are only about
+36 optimizer steps, training and validation loss were still falling, and the
+model never left the majority solution. The 128-token limit may also hurt
+because 93% of `report` and 84% of `take` posts are truncated, and all 268
+training labels remain AI pre-labels that have not been personally reviewed.
+Those are competing explanations. Without a completed agreement instrument
+for this project taxonomy, I cannot honestly attribute the collapse to label
+inconsistency rather than optimization, truncation, or model capacity.
+
+**Criterion 4 — the measurement was never completed.** The target specifically
+requires my labels and an assistant's blind labels on the 20 posts in
+`data/cold_label_queue.csv` under my own taxonomy. Neither set exists, so the
+criterion's original rule says it counts as missed. The 30-post staff exercise
+tests whether I can apply the separate staff taxonomy; even when available,
+that result can provide context but cannot replace the required measurement.
+
+**Criterion 5 — a narrow threshold miss, not evidence that confidence is
+useless.** All three high-minus-low gaps exceeded 0.15 by a wide margin. Seeds
+42 and 2024 nevertheless had 11 correct among the 13 most-confident posts,
+which is 0.846 rather than the required 0.85; with only 13 posts, the target
+effectively required 12 correct. Seed 7 passed at 1.000. This result is most
+consistent with small-sample variation at the cutoff, although the criterion
+still counts as missed because it had to pass on every seed.
 
 
 
@@ -598,7 +647,15 @@ label pair.
      data/staff_taxonomy.md, not your own — so every argument below is made
      from those definitions and those decision rules. -->
 
-**Agreement rate:** ___ / 30 = ___%
+**Status:** Blocked by a missing staff answer file. I completed and saved all
+30 independent labels in `my_staff_labels.csv` before looking for an answer
+key; the file has the exact original text, the required `text` and `label`
+columns, and no blank or invalid labels. However, `data/staff_labels.csv` is
+not present in this repository, its Git history, or the current remote.
+
+**Agreement rate:** Not calculable until the staff file is supplied. I did not
+run `agreement.py`, because its instructions require the actual staff answers;
+therefore `agreement_results.json` cannot truthfully be generated yet.
 
 <!-- Nobody grades this number. A 60% who argues every disagreement from the
      stated rules beats a 95% who wrote "staff was right" nine times. Several
@@ -620,25 +677,15 @@ label pair.
      written rule two different ways on 30 posts, that is direct evidence about
      what you did across your own 200. -->
 
-**1.**
-> *The post:*
->
-> *Staff said / I said:*
->
-> *My call, and why:*
->
-> *Which pile:*
+No disagreements can be identified without the staff labels. Consequently, I
+have not assigned any case to the inconsistency, taxonomy-gap, or defensible-
+ambiguity categories and have not pretended to make personal adjudications.
 
-**2.**
-> *The post:*
->
-> *Staff said / I said:*
->
-> *My call, and why:*
->
-> *Which pile:*
-
-**What the pattern in my disagreements tells me:**
+**What the pattern in my disagreements tells me:** No pattern can yet be
+inferred. Once the staff file is provided, the required next steps are to run
+`python agreement.py`, verify all 30 rows were compared, and adjudicate every
+reported disagreement from `data/staff_taxonomy.md` rather than automatically
+accepting the staff label.
 
 
 
@@ -646,24 +693,74 @@ label pair.
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** I changed one training hyperparameter: `EPOCHS` from 3 to
+10. The base model, 2e-5 learning rate, batch size 16, 128-token limit, data,
+taxonomy and seeds stayed fixed. I also set `RUN_LABEL = "after"`, which only
+sent the new evidence to `results_three_seeds_after.json` and did not alter the
+experiment.
 
-**Which diagnosis pointed at it:**
+**Which diagnosis pointed at it:** Every three-epoch model stopped at the
+majority-class solution after only about 36 optimizer steps even though loss
+was still falling. The zero-shot baseline's nonzero `report` and `take` F1
+showed that useful cues existed, so giving the same model more optimization
+steps was the cleanest single test of under-training.
+
+The 10-epoch run produced this metric spread:
+
+| Measure | Seed 42 | Seed 7 | Seed 2024 | Spread |
+|---|---|---|---|---|
+| Overall accuracy | 0.780 | 0.805 | 0.829 | 0.049 |
+| Macro F1 | 0.717 | 0.730 | 0.793 | 0.077 |
+| F1 — `question` | 0.880 | 0.868 | 0.880 | 0.012 |
+| F1 — `report` | 0.714 | 0.500 | 0.750 | 0.250 |
+| F1 — `take` | 0.556 | 0.824 | 0.750 | 0.268 |
 
 ### Run Log — After
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.70 on every seed | 0.780 | 0.805 | 0.829 | **MET** |
+| 2. Per-label F1 (`question` / `report` / `take`) | ≥ 0.65 / 0.65 / 0.50 on every seed | 0.880 / 0.714 / 0.556 | 0.868 / 0.500 / 0.824 | 0.880 / 0.750 / 0.750 | **MISSED** |
+| 3. Balance and test support | max share ≤ 60%; min test n ≥ 8 | 56.0%; min n = 9 | 56.0%; min n = 9 | 56.0%; min n = 9 | **MET** |
+| 4. Two-labeller cold-set agreement | ≥ 16/20 | not measured | not measured | not measured | **MISSED — not yet measured** |
+| 5. Confidence (most-third accuracy / gap over least-third) | ≥ 0.85 / ≥ 0.15 on every seed | 0.923 / 0.308 | 1.000 / 0.385 | 1.000 / 0.308 | **MET** |
+
+### Confusion matrix — After
+
+Section 7 prints the seed-42 matrix:
+
+| true \ predicted | question | report | take |
+|---|---|---|---|
+| **question** | 22 | 0 | 1 |
+| **report** | 1 | 5 | 3 |
+| **take** | 4 | 0 | 5 |
+
+The largest remaining directional error is 4 real `take` posts called
+`question`; only 1 real `question` post went the other way. The model also
+called 3 real `report` posts `take`, so it now attempts all three labels but
+still has unstable minority-label boundaries.
+
+### Before versus after
+
+| Measure | Before (42 / 7 / 2024) | After (42 / 7 / 2024) |
+|---|---|---|
+| Overall accuracy | 0.561 / 0.561 / 0.561 | 0.780 / 0.805 / 0.829 |
+| Macro F1 | 0.240 / 0.240 / 0.240 | 0.717 / 0.730 / 0.793 |
+| F1 — `question` | 0.719 / 0.719 / 0.719 | 0.880 / 0.868 / 0.880 |
+| F1 — `report` | 0.000 / 0.000 / 0.000 | 0.714 / 0.500 / 0.750 |
+| F1 — `take` | 0.000 / 0.000 / 0.000 | 0.556 / 0.824 / 0.750 |
 
 **Did it help, and how do I know:**
 
 <!-- If it didn't, say so. Relabelling that didn't help is a genuinely
      interesting result and earns full credit. -->
+
+Yes. Accuracy improved by 0.220 to 0.268 and macro F1 by 0.477 to
+0.554, depending on seed. The model changed from predicting only `question` to
+making correct `report` and `take` predictions on every seed; criteria 1 and 5
+moved from missed to met. The improvement did not solve everything: criterion
+2 still misses because seed 7's `report` F1 is 0.500, below 0.65, and its
+0.250 `report`-F1 spread shows that minority performance remains unstable.
 
 
 
@@ -673,11 +770,33 @@ label pair.
 
 <!-- For each criterion still missed: what you'd do, and why you stopped. -->
 
+**Criterion 2 remains missed.** Seed 7's `report` F1 is 0.500 even though the
+other seeds score 0.714 and 0.750; with only 9 report posts in each test split,
+individual errors move the score sharply. The 128-token window truncates 93%
+of reports, and the labels have not been personally reviewed, so a next step
+would be to audit the `question`/`report` and `report`/`take` boundary examples
+before testing either a longer token window or additional reviewed reports. I
+did not do that here because this milestone permits exactly one improvement,
+and changing the data or token limit after raising epochs would confound the
+result.
+
+**Criterion 4 remains missed because it is not measured.** It requires my own
+blind labels and an assistant's separate labels on the 20 cold posts under my
+project taxonomy. Producing the student's judgments is personal labelling work
+that cannot be reconstructed from model output, so I did not invent it. The
+separate 30-post staff agreement also cannot replace this criterion.
+
 
 
 **The gap between what I meant my labels to capture and what the model
 learned:**
 <!-- Two sentences. Your confusion matrix is the evidence. -->
+
+My taxonomy was meant to distinguish an open request for answers from a closed
+firsthand account and from a general claim about running. After ten epochs the
+model learned usable cues for all three, but the seed-42 matrix still sends 4
+of 9 `take` posts to `question` and 3 of 9 `report` posts to `take`, so it has
+not learned those boundaries consistently.
 
 
 
