@@ -532,6 +532,9 @@ add useful three-class discrimination.
 
 The notebook's section 6 produced this metric spread:
 
+**Run device:** `cuda` for seeds 42, 7, and 2024, as recorded in
+`results_three_seeds_before.json`.
+
 | Measure | Seed 42 | Seed 7 | Seed 2024 | Spread |
 |---|---|---|---|---|
 | Overall accuracy | 0.561 | 0.561 | 0.561 | 0.000 |
@@ -717,6 +720,9 @@ The 10-epoch run produced this metric spread:
 
 ### Run Log — After
 
+**Run device:** `cuda` for seeds 42, 7, and 2024, as recorded in
+`results_three_seeds_after.json`.
+
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
 | 1. Overall accuracy | ≥ 0.70 on every seed | 0.780 | 0.805 | 0.829 | **MET** |
@@ -761,6 +767,29 @@ making correct `report` and `take` predictions on every seed; criteria 1 and 5
 moved from missed to met. The improvement did not solve everything: criterion
 2 still misses because seed 7's `report` F1 is 0.500, below 0.65, and its
 0.250 `report`-F1 spread shows that minority performance remains unstable.
+
+
+
+---
+
+## Stretch Plan — Second Measured Improvement
+
+**Declared before the run on 21 October 2026.** The unit 5 analysis above
+already identified `MAX_LENGTH = 256` as a candidate before any repeated unit
+6 training, because 53 of 57 `report` posts (93%) exceed the current 128-token
+window and their outcomes often occur late. After the first improvement,
+`report` is the weakest label across the three runs: only 14 of 27 held-out
+reports are classified correctly in the summed confusion counts, and seed 7's
+`report` F1 is 0.500.
+
+For the +2 stretch experiment, I will change exactly one additional variable:
+`MAX_LENGTH` from 128 to 256. I will keep the 10 epochs, 2e-5 learning rate,
+batch size 16, model, dataset, taxonomy, split procedure, and seeds 42, 7, and
+2024 fixed. The results will be saved separately as
+`results_three_seeds_after_max_length_256.json`; the first before and after
+files will remain unchanged. This directly tests the documented truncation
+hypothesis, although it may not help if the remaining errors are caused by
+ambiguous boundaries rather than missing later text.
 
 
 
