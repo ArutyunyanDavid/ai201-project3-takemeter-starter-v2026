@@ -472,6 +472,22 @@ reviewed dataset.
   have not adjudicated disagreements because `data/staff_labels.csv` is still
   missing. No agreement number or personal judgment is being fabricated.
 
+**Project 6, moment 3 — stretch evaluation**
+
+- *What I asked for:* Claude Code was asked to pursue the rubric's declared
+  bonus work without altering earlier evidence or inventing examples.
+- *What came back:* it reproduced the saved seed-42 confusion matrix in a
+  deterministic 10-epoch run and saved row-level predictions for error
+  analysis. It then changed only the declared token limit, ran the same three
+  seeds, checked every metric against the resulting confusion counts, and
+  organized a third run log. A temporary Jupyter subprocess was blocked by
+  Windows Application Control before training, so it reran the same notebook
+  cell code in the project's working Python environment and verified the
+  notebook outputs against the JSON.
+- *What I changed:* I accepted `MAX_LENGTH = 256` as the second measured
+  experiment. I did not treat its mixed result as a fix: it improved average
+  accuracy but left the strict per-label criterion unmet.
+
 **Pre-labelling disclosure:** All 268 rows in `labels.csv` were pre-labelled
 by an AI assistant (Claude) on 14 October 2026 under the rules in
 docs/label_taxonomy.md. As of this commit **none has been read and corrected
@@ -746,6 +762,71 @@ The largest remaining directional error is 4 real `take` posts called
 called 3 real `report` posts `take`, so it now attempts all three labels but
 still has unstable minority-label boundaries.
 
+### Confidence check — stretch feature
+
+This check was declared before training as criterion 5 in `criteria.md`. Each
+third contains 13 posts; the difference column is most-confident accuracy
+minus least-confident accuracy.
+
+| 128-token run | Most-confident third | Least-confident third | Difference |
+|---|---:|---:|---:|
+| Seed 42 | 0.923 | 0.615 | +0.308 |
+| Seed 7 | 1.000 | 0.615 | +0.385 |
+| Seed 2024 | 1.000 | 0.692 | +0.308 |
+
+The model's confident predictions were more accurate than its unsure ones on
+all three seeds. All three most-confident thirds also exceeded the original
+0.85 target, so this is a useful ranking signal even though confidence does
+not make every individual prediction reliable.
+
+### Per-label error analysis — stretch feature
+
+The earlier `What's Still Broken` entry, committed before this analysis in
+`e75cf4a`, declared an audit of the `question`/`report` and `report`/`take`
+boundary examples as the next step. Summing the three 128-token after-run
+matrices gives:
+
+| true \ predicted | question | report | take |
+|---|---:|---:|---:|
+| **question** | 67 | 0 | 2 |
+| **report** | 9 | 14 | 4 |
+| **take** | 8 | 1 | 18 |
+
+`report` is the worst recovered label across the repeated experiment: 14 of
+27 are correct (51.9% recall), compared with 18 of 27 `take` posts and 67 of
+69 `question` posts. Its mean F1 is 0.655, below `take` at 0.710 and
+`question` at 0.876; most report errors go to `question` (9), with another 4
+going to `take`.
+
+Because the first after run did not save checkpoints or row predictions, I
+performed a deterministic seed-42 reproduction with the same data and
+settings. Its matrix exactly matches the saved seed-42 matrix, and its 41
+row-level predictions are in `error_analysis_after_seed42.json`; these are
+validated reproduced predictions, not a claim that the original predictions
+were recovered. The four wrong `report` examples are:
+
+| Post | Predicted | Why the text is difficult |
+|---|---|---|
+| *Her Last Steps* | `take` | A firsthand account later becomes an outward-facing safety message. |
+| *I successfully reverse-engineered Maurten Gel 100* | `question` | It reports a completed result, but much of the post reads like a recipe and how-to. |
+| *DIY Running Medal holder that displays the medal more than the ribbon* | `take` | It reports making one holder, then presents the result as cheap general advice and even asks whether it is a PSA. |
+| *In-depth review of Runna after using it for a year* | `take` | It is based on firsthand use but makes broad evaluative claims like an opinion post. |
+
+Three of these four are `report` → `take`, so the shared pattern is an
+atypical firsthand account that also functions as a PSA, how-to, or review.
+Three were truncated at 128 tokens, but 8 of all 9 held-out reports were also
+truncated; that base rate means truncation is only a hypothesis, not proof of
+the cause.
+
+The displayed seed-42 matrix also ties `take` for the lowest recall, and all
+four of its errors go to `question`: *Is it just me or have races gotten
+worse?*, *brief PSA on race reports*, *Runner's World has gotten closer and
+closer to Buzzfeed*, and the rant about nearly every 5K supporting a cause.
+Three of the four use literal or rhetorical question framing even though the
+core is a supported general claim. That pattern suggests the model is
+overweighting question-shaped surface cues instead of consistently applying
+the taxonomy's open-request-versus-closed-claim rule.
+
 ### Before versus after
 
 | Measure | Before (42 / 7 / 2024) | After (42 / 7 / 2024) |
@@ -791,6 +872,74 @@ files will remain unchanged. This directly tests the documented truncation
 hypothesis, although it may not help if the remaining errors are caused by
 ambiguous boundaries rather than missing later text.
 
+The future tense above is retained as the pre-run declaration; the measured
+results follow.
+
+### Results — 256-token run
+
+The run produced this metric spread:
+
+| Measure | Seed 42 | Seed 7 | Seed 2024 | Spread |
+|---|---:|---:|---:|---:|
+| Overall accuracy | 0.780 | 0.829 | 0.902 | 0.122 |
+| Macro F1 | 0.704 | 0.740 | 0.876 | 0.171 |
+| F1 — `question` | 0.898 | 0.920 | 0.939 | 0.041 |
+| F1 — `report` | 0.615 | 0.500 | 0.889 | 0.389 |
+| F1 — `take` | 0.600 | 0.800 | 0.800 | 0.200 |
+
+### Run Log — After 2
+
+**Run device:** `cuda` for seeds 42, 7, and 2024, as recorded in
+`results_three_seeds_after_max_length_256.json`.
+
+| Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
+|---|---|---|---|---|---|
+| 1. Overall accuracy | ≥ 0.70 on every seed | 0.780 | 0.829 | 0.902 | **MET** |
+| 2. Per-label F1 (`question` / `report` / `take`) | ≥ 0.65 / 0.65 / 0.50 on every seed | 0.898 / 0.615 / 0.600 | 0.920 / 0.500 / 0.800 | 0.939 / 0.889 / 0.800 | **MISSED** |
+| 3. Balance and test support | max share ≤ 60%; min test n ≥ 8 | 56.0%; min n = 9 | 56.0%; min n = 9 | 56.0%; min n = 9 | **MET** |
+| 4. Two-labeller cold-set agreement | ≥ 16/20 | not measured | not measured | not measured | **MISSED — not yet measured** |
+| 5. Confidence (most-third accuracy / gap over least-third) | ≥ 0.85 / ≥ 0.15 on every seed | 0.923 / 0.538 | 1.000 / 0.231 | 1.000 / 0.308 | **MET** |
+
+### Confusion matrix — After 2
+
+Section 7 prints the seed-42 matrix:
+
+| true \ predicted | question | report | take |
+|---|---:|---:|---:|
+| **question** | 22 | 0 | 1 |
+| **report** | 1 | 4 | 4 |
+| **take** | 3 | 0 | 6 |
+
+The largest directional error is now 4 `report` posts called `take`, with
+none going the other way. This is a different failure from the hoped-for
+effect: more context did not make the model consistently recognize a
+firsthand account when that account also contains a review, how-to, or general
+claim.
+
+### First improvement versus second improvement
+
+| Measure | 128 tokens (42 / 7 / 2024) | 256 tokens (42 / 7 / 2024) | Mean change |
+|---|---|---|---:|
+| Overall accuracy | 0.780 / 0.805 / 0.829 | 0.780 / 0.829 / 0.902 | +0.033 |
+| Macro F1 | 0.717 / 0.730 / 0.793 | 0.704 / 0.740 / 0.876 | +0.027 |
+| F1 — `question` | 0.880 / 0.868 / 0.880 | 0.898 / 0.920 / 0.939 | +0.043 |
+| F1 — `report` | 0.714 / 0.500 / 0.750 | 0.615 / 0.500 / 0.889 | +0.013 |
+| F1 — `take` | 0.556 / 0.824 / 0.750 | 0.600 / 0.800 / 0.800 | +0.024 |
+
+**Did the second change help?** It helped modestly on average but not
+consistently. Mean accuracy rose from 0.805 to 0.837 and mean macro F1 from
+0.747 to 0.773; seed 2024 supplied most of that gain. Seed 42's accuracy did
+not move, its macro F1 fell by 0.012, and its `report` F1 fell from 0.714 to
+0.615. Seed 7's `report` F1 stayed at 0.500.
+
+The summed `report` row changed from 9 / 14 / 4 at 128 tokens to 5 / 15 / 7
+at 256 tokens (`question` / `report` / `take`). Thus the longer context
+reduced `report` → `question` errors, but added almost as many `report` →
+`take` errors and recovered only one more report overall. No criterion verdict
+changed; criterion 2 still fails, now because `report` is below 0.65 on seeds
+42 and 7, and the accuracy spread grew from 0.049 to 0.122. The result supports
+longer context as a partial aid, not as a complete diagnosis or fix.
+
 
 
 ---
@@ -799,15 +948,18 @@ ambiguous boundaries rather than missing later text.
 
 <!-- For each criterion still missed: what you'd do, and why you stopped. -->
 
-**Criterion 2 remains missed.** Seed 7's `report` F1 is 0.500 even though the
-other seeds score 0.714 and 0.750; with only 9 report posts in each test split,
-individual errors move the score sharply. The 128-token window truncates 93%
-of reports, and the labels have not been personally reviewed, so a next step
-would be to audit the `question`/`report` and `report`/`take` boundary examples
-before testing either a longer token window or additional reviewed reports. I
-did not do that here because this milestone permits exactly one improvement,
-and changing the data or token limit after raising epochs would confound the
-result.
+**Criterion 2 remains missed.** With 256 tokens, `report` F1 is 0.615 / 0.500
+/ 0.889: seeds 42 and 7 remain below the 0.65 target. Only 15 of 27 reports
+are correct across the three runs, with 5 called `question` and 7 called
+`take`; the seed-to-seed report-F1 spread is 0.389. The longer window reduced
+the first error direction but increased the second, so truncation was not the
+only problem. The concrete errors mix firsthand outcomes with PSA, how-to,
+and review language, and all 268 training labels are still unreviewed AI
+pre-labels. The strongest next step is therefore a personal audit of those
+two boundaries, followed by one clean data revision or additional reviewed
+`report` examples. I stopped after the one declared stretch experiment
+because that labeling and adjudication requires the student's own judgment;
+I did not invent it or add a third uncontrolled change.
 
 **Criterion 4 remains missed because it is not measured.** It requires my own
 blind labels and an assistant's separate labels on the 20 cold posts under my
@@ -822,10 +974,10 @@ learned:**
 <!-- Two sentences. Your confusion matrix is the evidence. -->
 
 My taxonomy was meant to distinguish an open request for answers from a closed
-firsthand account and from a general claim about running. After ten epochs the
-model learned usable cues for all three, but the seed-42 matrix still sends 4
-of 9 `take` posts to `question` and 3 of 9 `report` posts to `take`, so it has
-not learned those boundaries consistently.
+firsthand account and from a general claim about running. After the 256-token
+run, only 15 of 27 reports are recovered across the three seeds and 7 become
+`take`, so the model learned useful surface cues for all three labels but not
+a stable firsthand-account-versus-general-claim boundary.
 
 
 
