@@ -1,0 +1,164 @@
+[
+  {
+    "seed": 42,
+    "n_test": 41,
+    "accuracy": 0.7804878048780488,
+    "f1_macro": 0.7044479330193617,
+    "per_label": {
+      "question": {
+        "precision": 0.8461538461538461,
+        "recall": 0.9565217391304348,
+        "f1": 0.8979591836734694,
+        "support": 23
+      },
+      "report": {
+        "precision": 1.0,
+        "recall": 0.4444444444444444,
+        "f1": 0.6153846153846154,
+        "support": 9
+      },
+      "take": {
+        "precision": 0.5454545454545454,
+        "recall": 0.6666666666666666,
+        "f1": 0.6,
+        "support": 9
+      }
+    },
+    "confusion": {
+      "question": {
+        "question": 22,
+        "report": 0,
+        "take": 1
+      },
+      "report": {
+        "question": 1,
+        "report": 4,
+        "take": 4
+      },
+      "take": {
+        "question": 3,
+        "report": 0,
+        "take": 6
+      }
+    },
+    "confidence": {
+      "mean_when_right": 0.7664338946342468,
+      "mean_when_wrong": 0.49520525336265564,
+      "accuracy_most_confident_third": 0.9230769230769231,
+      "accuracy_least_confident_third": 0.38461538461538464,
+      "n_per_third": 13
+    },
+    "device": "cuda",
+    "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "torch_version": "2.11.0+cu128",
+    "max_length": 256
+  },
+  {
+    "seed": 7,
+    "n_test": 41,
+    "accuracy": 0.8292682926829268,
+    "f1_macro": 0.7399999999999999,
+    "per_label": {
+      "question": {
+        "precision": 0.8518518518518519,
+        "recall": 1.0,
+        "f1": 0.92,
+        "support": 23
+      },
+      "report": {
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f1": 0.5,
+        "support": 9
+      },
+      "take": {
+        "precision": 0.7272727272727273,
+        "recall": 0.8888888888888888,
+        "f1": 0.8,
+        "support": 9
+      }
+    },
+    "confusion": {
+      "question": {
+        "question": 23,
+        "report": 0,
+        "take": 0
+      },
+      "report": {
+        "question": 3,
+        "report": 3,
+        "take": 3
+      },
+      "take": {
+        "question": 1,
+        "report": 0,
+        "take": 8
+      }
+    },
+    "confidence": {
+      "mean_when_right": 0.7984511852264404,
+      "mean_when_wrong": 0.6448336839675903,
+      "accuracy_most_confident_third": 1.0,
+      "accuracy_least_confident_third": 0.7692307692307693,
+      "n_per_third": 13
+    },
+    "device": "cuda",
+    "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "torch_version": "2.11.0+cu128",
+    "max_length": 256
+  },
+  {
+    "seed": 2024,
+    "n_test": 41,
+    "accuracy": 0.9024390243902439,
+    "f1_macro": 0.8758881330309901,
+    "per_label": {
+      "question": {
+        "precision": 0.8846153846153846,
+        "recall": 1.0,
+        "f1": 0.9387755102040817,
+        "support": 23
+      },
+      "report": {
+        "precision": 0.8888888888888888,
+        "recall": 0.8888888888888888,
+        "f1": 0.8888888888888888,
+        "support": 9
+      },
+      "take": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1": 0.8,
+        "support": 9
+      }
+    },
+    "confusion": {
+      "question": {
+        "question": 23,
+        "report": 0,
+        "take": 0
+      },
+      "report": {
+        "question": 1,
+        "report": 8,
+        "take": 0
+      },
+      "take": {
+        "question": 2,
+        "report": 1,
+        "take": 6
+      }
+    },
+    "confidence": {
+      "mean_when_right": 0.7789236307144165,
+      "mean_when_wrong": 0.6196392178535461,
+      "accuracy_most_confident_third": 1.0,
+      "accuracy_least_confident_third": 0.6923076923076923,
+      "n_per_third": 13
+    },
+    "device": "cuda",
+    "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "torch_version": "2.11.0+cu128",
+    "max_length": 256
+  }
+]
